@@ -55,17 +55,10 @@ void loop(){
   else if(lineExample == 10)factor = 1;
   lineExample += factor;
   leituraAtual++;
-  if(leituraAtual == 270)
+  if(leituraAtual == 270 || M5.BtnA.wasPressed() || M5.BtnB.wasPressed() || M5.BtnC.wasPressed())
   {
     M5.Lcd.fillRect(POS_X_GRAFICO+1,POS_Y_GRAFICO-1,COMPRIMENTO_GRAFICO,ALTURA_GRAFICO-1,BLACK);
     leituraAtual = 1;
-  }
-  if(M5.BtnA.wasPressed() || M5.BtnB.wasPressed() || M5.BtnC.wasPressed())
-  {
-    M5.Lcd.fillRect(POS_X_GRAFICO+1,POS_Y_GRAFICO-1,COMPRIMENTO_GRAFICO,ALTURA_GRAFICO-1,BLACK);
-    leituraAtual = 1;
-    M5.Lcd.fillRect(POS_X_DADOS+50,POS_Y_DADOS,60,30,BLACK);
-    M5.Lcd.fillRect(POS_X_DADOS+165,POS_Y_DADOS,90,30,BLACK);
   }
   M5.Lcd.fillRect(POS_X_DADOS+50,POS_Y_DADOS,60,30,BLACK);
   M5.Lcd.fillRect(POS_X_DADOS+165,POS_Y_DADOS,90,30,BLACK);
