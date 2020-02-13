@@ -2,13 +2,11 @@
 #define TFT_GREY 0x5AEB
 uint32_t targetTime = 0;
 static uint8_t conv2d(const char *p);
-
-// uint8_t hh = conv2d(__TIME__), mm = conv2d(__TIME__ + 3);
-// uint8_t ss = conv2d(__TIME__ + 6);
 int hh = 0, mm = 0, ss = 0, ms = 0;
 
-byte omm = 99, oss = 99, oms = 99;
+byte omm = 99, oss = 99, oms = 101;
 byte xcolon = 0, xsecs = 0, xms = 0;
+bool run = false;
 unsigned int colour = 0;
 
 void setup(void)
@@ -17,14 +15,16 @@ void setup(void)
     M5.Lcd.fillScreen(TFT_BLACK);
     M5.Lcd.setTextSize(1);
     M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
-    targetTime = millis() + 1000;
+    targetTime = millis() + 10;
 }
 
 void loop()
 {
+    if(run)
+    {
     if (targetTime < millis())
     {
-        targetTime = millis() + 1000;
+        targetTime = millis() + 10;
         ms++;
         if (ms == 100)
         {
@@ -57,7 +57,7 @@ void loop()
                 xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
             xpos += M5.Lcd.drawNumber(hh, xpos, ypos, 7);
             xcolon = xpos;
-            xpos += M5.Lcd.drawChar(':', xpos, ypos - 8, 7);
+            xpos += M5.Lcd.drawChar(':', xpos, ypos, 7);
             if (mm < 10)
                 xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
             xpos += M5.Lcd.drawNumber(mm, xpos, ypos, 7);
@@ -70,35 +70,65 @@ void loop()
             if (ss % 2)
             {
                 M5.Lcd.setTextColor(0x39C4, TFT_BLACK);
-                M5.Lcd.drawChar(':', xcolon, ypos - 8, 7);
-                xpos += M5.Lcd.drawChar(':', xsecs, ysecs, 7);
+                M5.Lcd.drawChar(':', xcolon, ypos, 7);
+                xpos += M5.Lcd.drawChar(':', xsecs, ypos, 7);
                 M5.Lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
             }
             else
             {
-                M5.Lcd.drawChar(':', xcolon, ypos - 8, 7);
-                xpos += M5.Lcd.drawChar(':', xsecs, ysecs, 7);
+                M5.Lcd.drawChar(':', xcolon, ypos, 7);
+                xpos += M5.Lcd.drawChar(':', xsecs, ypos, 7);
             }
             if (ss < 10)
-                xpos += M5.Lcd.drawChar('0', xpos, ysecs, 7);
-            M5.Lcd.drawNumber(ss, xpos, ysecs, 7);
+                xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
+           xpos += M5.Lcd.drawNumber(ss, xpos, ypos, 7);
+           xms = xpos;
         }
-        xms = xpos;
         if (oms != ms)
         {
-            oms = ms;
             xpos = xms;
-            xpos += M5.Lcd.drawChar('.', xms, ysecs, 7);
+           oms = ms;
+           xpos+=M5.Lcd.drawChar('.',xpos,ypos,7);
             if (ms < 10)
-                xpos += M5.Lcd.drawChar('0', xpos, ysecs, 7);
-            M5.Lcd.drawNumber(ms, xpos, ysecs, 7);
+                xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
+            xpos+=M5.Lcd.drawNumber(ms, xpos, ypos, 7);
         }
     }
-}
-static uint8_t conv2d(const char *p)
-{
-    uint8_t v = 0;
-    if ('0' <= *p && *p <= '9')
-        v = *p - '0';
-    return 10 * v + *++p - '0';
+    }
+    else
+    {
+      int xpos = 0;
+      int ypos = 85;
+            if (hh < 10)
+                xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
+            xpos += M5.Lcd.drawNumber(hh, xpos, ypos, 7);
+            xcolon = xpos;
+            xpos += M5.Lcd.drawChar(':', xpos, ypos, 7);
+            if (mm < 10)
+                xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
+            xpos += M5.Lcd.drawNumber(mm, xpos, ypos, 7);
+            xsecs = xpos;
+            xpos += M5.Lcd.drawChar(':', xsecs, ypos, 7);
+             if (ss < 10)
+                xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
+           xpos += M5.Lcd.drawNumber(ss, xpos, ypos, 7);
+           xms = xpos;
+           xpos = xms;
+           oms = ms;
+           xpos+=M5.Lcd.drawChar('.',xpos,ypos,7);
+            if (ms < 10)
+                xpos += M5.Lcd.drawChar('0', xpos, ypos, 7);
+            xpos+=M5.Lcd.drawNumber(ms, xpos, ypos, 7);
+    }
+    if(M5.BtnA.wasPressed()) run = true;
+    if(M5.BtnB.wasPressed()) run = false;
+    if(M5.BtnC.wasPressed())
+    {
+      hh = 0;
+      mm = 0;
+      ss = 0;
+      ms = 0;
+      run = false;
+    }
+    M5.update();
 }
